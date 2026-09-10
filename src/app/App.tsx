@@ -32,13 +32,35 @@ import companyLogo from 'figma:asset/1da61fd33df92088a3201638d93abaf418e82ba1.pn
 
 type Page = 'dashboard' | 'customers' | 'employees' | 'bookings' | 'services' | 'payments' | 'reports' | 'settings';
 
+export interface UserAddress {
+  id: string;
+  type: string;
+  fullAddress: string;
+  city: string;
+  state: string;
+  pincode: string;
+  landmark?: string;
+  isPrimary?: boolean;
+}
+
+export interface UserData {
+  name: string;
+  email: string;
+  mobile?: string;
+  addresses?: UserAddress[];
+}
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [user, setUser] = useState<UserData>({ name: 'Harshin', email: 'admin@company.com' });
 
   if (!isLoggedIn) {
-    return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
+    return <LoginPage onLogin={(loggedInUser) => {
+      setUser(loggedInUser);
+      setIsLoggedIn(true);
+    }} />;
   }
 
   const unreadNotifications = mockNotifications.filter(n => !n.read).length;
@@ -103,6 +125,7 @@ export default function App() {
               onClick={() => {
                 if (item.id === 'logout') {
                   setIsLoggedIn(false);
+                  setUser({ name: 'Harshin', email: 'admin@company.com' });
                 } else {
                   setCurrentPage(item.id);
                 }
@@ -134,7 +157,7 @@ export default function App() {
                 {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
               <div>
-                <h1 className="text-sm text-gray-900">Welcome back, Harshin</h1>
+                <h1 className="text-sm text-gray-900">Welcome back, {user.name}</h1>
                 <p className="text-xs text-gray-500">Today is {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
               </div>
             </div>
@@ -195,11 +218,11 @@ export default function App() {
               {/* User Profile */}
               <div className="flex items-center gap-3 pl-4 border-l">
                 <div className="text-right">
-                  <p className="text-sm">Harshin</p>
-                  <p className="text-xs text-gray-500">Super Admin</p>
+                  <p className="text-sm">{user.name}</p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
-                  H
+                  {user.name.charAt(0).toUpperCase()}
                 </div>
               </div>
             </div>
